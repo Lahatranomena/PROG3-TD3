@@ -6,7 +6,7 @@ public class DishIngredient {
     private int id;
     private Dish dish;
     private Ingredient ingredient;
-    private Double quantity;
+    private double quantity;
     private Unit unit;
 
     public DishIngredient(int id, Dish dish, Ingredient ingredient, Double quantity, Unit unit) {
