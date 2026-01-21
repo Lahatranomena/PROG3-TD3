@@ -6,20 +6,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DataRetriever {
-    Dish findDishById(Integer id) throws SQLException {
+    Dish findDishByIngredient(Integer id) {
         DBConnection dbConnection = new DBConnection();
         Connection connection = dbConnection.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
-                            select dish.id as dish_id, dish.name as dish_name, dish_type, dish.price as dish_price
-                            from dish
-                            where dish.id = ?;
+                            select dishingredient.id as dishIngredient_id, dish.id as dish_id, dish.name as
+                            dish_name, dish.dish_type as dish_type, dish.price as dish_price
+                            from dishIngredient join dish on dishingredient.id_dish = dish.id
+                            where dishingredient.id = ?;
                             """);
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
+                DishIngredient dishIn = new DishIngredient();
                 Dish dish = new Dish();
+                dishIn.setId(resultSet.getInt("dish_id"));
                 dish.setId(resultSet.getInt("dish_id"));
                 dish.setName(resultSet.getString("dish_name"));
                 dish.setDishType(DishTypeEnum.valueOf(resultSet.getString("dish_type")));
@@ -72,7 +75,7 @@ public class DataRetriever {
             attachIngredients(conn, dishId, newIngredients);
 
             conn.commit();
-            return findDishById(dishId);
+            return findDishByIngredient(dishId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

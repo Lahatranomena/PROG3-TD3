@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         // Log before changes
         DataRetriever dataRetriever = new DataRetriever();
-        Dish dish = dataRetriever.findDishById(4
+        Dish dish = dataRetriever.findDishByIngredient(4
 
         );
         System.out.println(dish);

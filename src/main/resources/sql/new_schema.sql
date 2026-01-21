@@ -15,9 +15,8 @@ VALUES (1, 1, 1, 0.20, 'KG'),
        (4, 4, 4, 0.30, 'KG'),
        (5, 4, 5, 0.20, 'KG');
 
-INSERT INTO dish(id, name, dish_type, price)
-VALUES (1, 'Salade fraîche', 'STARTER', 3500.00),
-       (2, 'Poulet grillé', 'MAIN', 12000.00),
-       (3, 'Riz au légumes', 'MAIN', null),
-       (4, 'Gateau au chocolat', 'DESSERT', 8000.00),
-       (5, 'Salade de fruits', 'DESSERT', null);
+update dish set price = 3500.00 where id = 1;
+update dish set price = 12000.00 where id = 2;
+update dish set price = null where id = 3;
+update dish set price = 8000.00 where id = 4;
+update dish set price = null where id = 5;
