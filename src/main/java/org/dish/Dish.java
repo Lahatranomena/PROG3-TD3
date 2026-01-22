@@ -19,16 +19,21 @@ public class Dish {
     }
 
     public Double getDishCost() {
-        double totalPrice = 0;
-        for (int i = 0; i < ingredients.size(); i++) {
-            Double quantity = ingredients.get(i).getQuantity();
-            if(quantity == null) {
-                throw new RuntimeException("...");
+        double totalPrice = 0.0;
+        List<DishIngredient> dishIngredients = List.of();
+        for (DishIngredient dishIngredient : dishIngredients) {
+            Double quantity = dishIngredient.getQuantity();
+            if (quantity == null) {
+                throw new RuntimeException("Ingredient quantity cannot be null");
             }
-            totalPrice = totalPrice + ingredients.get(i).getPrice() * quantity;
+
+            double ingredientPrice = dishIngredient.getIngredient().getPrice();
+            totalPrice += ingredientPrice * quantity;
         }
+
         return totalPrice;
     }
+
 
     public Dish() {
     }
