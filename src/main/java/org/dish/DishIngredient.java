@@ -4,17 +4,17 @@ import java.util.Objects;
 
 public class DishIngredient {
     private int id;
-    private Dish dish;
     private Ingredient ingredient;
+    private Dish dish;
     private double quantity;
     private Unit unit;
 
     public DishIngredient(int id, Dish dish, Ingredient ingredient, Double quantity, Unit unit) {
         this.id = id;
-        this.dish = dish;
         this.ingredient = ingredient;
         this.quantity = quantity;
         this.unit = unit;
+        this.dish = dish;
     }
 
 
@@ -37,6 +37,7 @@ public class DishIngredient {
     public void setDish(Dish dish) {
         this.dish = dish;
     }
+
 
     public Ingredient getIngredient() {
         return ingredient;
@@ -77,7 +78,6 @@ public class DishIngredient {
     public String toString() {
         return "DishIngredient{" +
                 "id=" + id +
-                ", dish=" + dish +
                 ", ingredient=" + ingredient +
                 ", quantity=" + quantity +
                 ", unit=" + unit +
