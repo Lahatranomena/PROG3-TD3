@@ -80,62 +80,61 @@ public class DataRetriever {
         }
     }
 
-//    public List<Ingredient> createIngredients(List<Ingredient> newIngredients) {
-//        if (newIngredients == null || newIngredients.isEmpty()) {
-//            return List.of();
-//        }
-//        List<Ingredient> savedIngredients = new ArrayList<>();
-//        DBConnection dbConnection = new DBConnection();
-//        Connection conn = dbConnection.getConnection();
-//        try {
-//            conn.setAutoCommit(false);
-//            String insertSql = """
-//                        INSERT INTO ingredient (id, name, category, price, required_quantity)
-//                        VALUES (?, ?, ?::ingredient_category, ?, ?)
-//                        RETURNING id
-//                    """;
-//            try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-//                for (Ingredient ingredient : newIngredients) {
-//                    if (ingredient.getId() != null) {
-//                        ps.setInt(1, ingredient.getId());
-//                    } else {
-//                        ps.setInt(1, getNextSerialValue(conn, "ingredient", "id"));
-//                    }
-//                    ps.setString(2, ingredient.getName());
-//                    ps.setString(3, ingredient.getCategory().name());
-//                    ps.setDouble(4, ingredient.getPrice());
-//                    if (ingredient.getQuantity() != null) {
-//                        ps.setDouble(5, ingredient.getQuantity());
-//                    }else {
-//                        ps.setNull(5, Types.DOUBLE);
-//                    }
-//
-//                    try (ResultSet rs = ps.executeQuery()) {
-//                        rs.next();
-//                        int generatedId = rs.getInt(1);
-//                        ingredient.setId(generatedId);
-//                        savedIngredients.add(ingredient);
-//                    }
-//                }
-//                conn.commit();
-//                return savedIngredients;
-//            } catch (SQLException e) {
-//                conn.rollback();
-//                throw new RuntimeException(e);
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            dbConnection.closeConnection(conn);
-//        }
-//    }
+    public List<Ingredient> createIngredients(List<Ingredient> newIngredients) {
+        if (newIngredients == null || newIngredients.isEmpty()) {
+            return List.of();
+        }
+        List<Ingredient> savedIngredients = new ArrayList<>();
+        DBConnection dbConnection = new DBConnection();
+        Connection conn = dbConnection.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            String insertSql = """
+                        INSERT INTO ingredient (id, name, category, price, required_quantity)
+                        VALUES (?, ?, ?::ingredient_category, ?, ?)
+                        RETURNING id
+                    """;
+            try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                for (Ingredient ingredient : newIngredients) {
+                    if (ingredient.getId() != null) {
+                        ps.setInt(1, ingredient.getId());
+                    } else {
+                        ps.setInt(1, getNextSerialValue(conn, "ingredient", "id"));
+                    }
+                    ps.setString(2, ingredient.getName());
+                    ps.setString(3, ingredient.getCategory().name());
+                    ps.setDouble(4, ingredient.getPrice());
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        int generatedId = rs.getInt(1);
+                        ingredient.setId(generatedId);
+                        savedIngredients.add(ingredient);
+                    }
+                }
+                conn.commit();
+                return savedIngredients;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            dbConnection.closeConnection(conn);
+        }
+    }
 
 
     private void detachIngredients(Connection conn, Integer dishId, List<DishIngredient> ingredients)
             throws SQLException {
         if (ingredients == null || ingredients.isEmpty()) {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE ingredient SET id_dish = NULL WHERE id_dish = ?")) {
+                    """
+                            update dishingredient
+                            set id_ingredient = ?
+                            where id_dish = ? and id_ingredient = ?;
+                            """)) {
                 ps.setInt(1, dishId);
                 ps.executeUpdate();
             }
@@ -172,9 +171,10 @@ public class DataRetriever {
         }
 
         String attachSql = """
-                    UPDATE ingredient
-                    SET id_dish = ?
-                    WHERE id = ?
+                    UPDATE dishingredient
+                    SET id_ingredient = ?
+                    WHERE id_dish = ?;
+                    
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(attachSql)) {
