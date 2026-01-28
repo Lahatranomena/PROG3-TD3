@@ -8,6 +8,8 @@ CREATE TABLE stock_movement(
     type movement_type,
     unit unit_type,
     creation_datetime timestamp
+
+--foreign key id_ingredient
 );
 
 INSERT INTO stock_movement (id, id_ingredient, quantity, type, unit, creation_datetime)

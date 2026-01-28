@@ -40,15 +40,17 @@ public class DataRetriever {
         }
     }
 
-    private List<DishIngredient> findIngredientByDishId(Integer idDish) {
+    public List<DishIngredient> findIngredientByDishId(Integer idDish) {
         DBConnection dbConnection = new DBConnection();
         Connection connection = dbConnection.getConnection();
-        List<DishIngredient> ingredients = new ArrayList<>();
+        List<DishIngredient> dishIngredients = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
-                            select ingredient.id, ingredient.name, ingredient.price, ingredient.category, ingredient.required_quantity
-                            from dishingredient join ingredient on dishingredient.id_ingredient = ingredient.id where id_dish = ?;
+                            select dishingredient.id, ingredient.id, ingredient.name, ingredient.price, ingredient.category, 
+                            dishingredient.quantity_required, dishingredient.unit
+                            from dishingredient join ingredient 
+                            on dishingredient.id_ingredient = ingredient.id where id_dish = ?;
                             """);
 
             preparedStatement.setInt(1, idDish);
@@ -56,19 +58,21 @@ public class DataRetriever {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 DishIngredient dishIngredient = new DishIngredient();
+                dishIngredient.setId(resultSet.getInt("id"));
                 Ingredient ingredient = new Ingredient();
                 ingredient.setId(resultSet.getInt("id"));
                 ingredient.setName(resultSet.getString("name"));
                 ingredient.setPrice(resultSet.getDouble("price"));
                 ingredient.setCategory(CategoryEnum.valueOf(resultSet.getString("category")));
-                Object requiredQuantity = resultSet.getObject("required_quantity");
+                dishIngredient.setQuantity(resultSet.getDouble("quantity_required"));
+                dishIngredient.setUnit(Unit.valueOf(resultSet.getString("unit")));
                 dishIngredient.setIngredient(ingredient);
-                ingredients.add(dishIngredient);
+                dishIngredients.add(dishIngredient);
 
 
             }
             dbConnection.closeConnection(connection);
-            return ingredients;
+            return dishIngredients;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -137,8 +141,8 @@ public class DataRetriever {
         try {
             conn.setAutoCommit(false);
             String insertSql = """
-                        INSERT INTO ingredient (id, name, category, price, required_quantity)
-                        VALUES (?, ?, ?::ingredient_category, ?, ?)
+                        INSERT INTO ingredient (id, name, category, price)
+                        VALUES (?, ?, ?::ingredient_category, ?)
                         RETURNING id
                     """;
             try (PreparedStatement ps = conn.prepareStatement(insertSql)) {

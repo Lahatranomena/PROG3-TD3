@@ -1,5 +1,7 @@
 package org.dish;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Ingredient {
@@ -7,6 +9,7 @@ public class Ingredient {
     private String name;
     private CategoryEnum category;
     private Double price;
+    private List<StockMovement> stockMovementList;
 
 
     public Ingredient() {
