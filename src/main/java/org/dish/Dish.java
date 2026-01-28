@@ -18,6 +18,8 @@ public class Dish {
         this.price = price;
     }
 
+
+
     public Double getDishCost() {
         double totalPrice = 0.0;
         List<DishIngredient> dishIngredients = List.of();
@@ -38,10 +40,11 @@ public class Dish {
     public Dish() {
     }
 
-    public Dish(Integer id, String name, DishTypeEnum dishType, List<DishIngredient> ingredients) {
+    public Dish(Integer id, String name, DishTypeEnum dishType, Double price, List<DishIngredient> ingredients) {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
+        this.price = price;
         this.ingredients = ingredients;
     }
 

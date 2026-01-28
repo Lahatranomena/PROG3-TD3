@@ -9,6 +9,13 @@ public class DishIngredient {
     private double quantity;
     private Unit unit;
 
+    public DishIngredient(int id, Ingredient ingredient, double quantity, Unit unit) {
+        this.id = id;
+        this.ingredient = ingredient;
+        this.quantity = quantity;
+        this.unit = unit;
+    }
+
     public DishIngredient(int id, Dish dish, Ingredient ingredient, Double quantity, Unit unit) {
         this.id = id;
         this.ingredient = ingredient;
