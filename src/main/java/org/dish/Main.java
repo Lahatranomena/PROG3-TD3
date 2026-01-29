@@ -16,17 +16,43 @@ public class Main {
 //        Dish dish = retriever.findDishById(1);
 //        System.out.println(dish.getGrossMargin());
 
+
+//        String referenceToSearch = "ORD00001"; // <-- Mets une référence qui existe dans ta table "order"
+//
+//        try {
+//            Order order = retriever.findOrderByReference(referenceToSearch);
+//            System.out.println("Commande trouvée : ");
+//            System.out.println("ID : " + order.getId());
+//            System.out.println("Référence : " + order.getReference());
+//            System.out.println("Date de création : " + order.getCreationDatetime());
+//            System.out.println("Type : " + order.getOrderType());
+//            System.out.println("Status : " + order.getOrderStatut());
+//
+//            System.out.println("Détails des plats commandés :");
+//            for (DishOrder dishOrder : order.getDishOrderList()) {
+//                System.out.println("  Plat : " + dishOrder.getDish().getName()
+//                        + ", Quantité : " + dishOrder.getQuantity()
+//                        + ", Prix unitaire : " + dishOrder.getDish().getPrice()
+//                        + ", Coût total : " + dishOrder.getDish().getDishCost());
+//            }
+//
+//        } catch (RuntimeException e) {
+//            System.out.println("Erreur : " + e.getMessage());
+//        }
+
         try {
-            Dish dish = retriever.findDishById(2);
+            Dish dish = retriever.findDishById(1);
 
             DishOrder dishOrder = new DishOrder();
             dishOrder.setDish(dish);
-            dishOrder.setQuantity(2);
+            dishOrder.setQuantity(1);
 
             Order order = new Order();
             order.setId(2);
-            order.setReference("ORDER-TEST-001");
+            order.setReference("ORD00001");
             order.setCreationDatetime(Instant.now());
+            order.setOrderType(OrderType.EAT_IN);
+            order.setOrderStatut(OrderStatus.DELIVERED);
             order.setDishOrderList(List.of(dishOrder));
 
             Order savedOrder = retriever.saveOrder(order);

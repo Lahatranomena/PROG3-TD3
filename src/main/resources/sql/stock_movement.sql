@@ -52,3 +52,15 @@ UPDATE ingredient SET initial_stock = 4.0 WHERE id = 2;
 UPDATE ingredient SET initial_stock = 10.0 WHERE id = 3;
 UPDATE ingredient SET initial_stock = 3.0 WHERE id = 4;
 UPDATE ingredient SET initial_stock = 2.5 WHERE id = 5;
+
+CREATE TYPE order_type AS ENUM ('EAT_IN', 'TAKE_AWAY');
+
+CREATE TYPE order_status AS ENUM ('CREATED', 'READY', 'DELIVERED');
+
+ALTER TABLE "order"
+    ADD COLUMN type order_type;
+
+ALTER TABLE "order"
+    ADD COLUMN status order_status;
+
+

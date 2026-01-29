@@ -16,7 +16,7 @@ public class DataRetriever {
         DBConnection dbConnection = new DBConnection();
         try (Connection connection = dbConnection.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("""
-                    select id, reference, creation_datetime from "order" where reference like ?""");
+                    select id, reference, creation_datetime, type, status from "order" where reference like ?""");
             preparedStatement.setString(1, reference);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -25,6 +25,8 @@ public class DataRetriever {
                 order.setId(idOrder);
                 order.setReference(resultSet.getString("reference"));
                 order.setCreationDatetime(resultSet.getTimestamp("creation_datetime").toInstant());
+                order.setOrderType(OrderType.valueOf(resultSet.getString("type")));
+                order.setOrderStatut(OrderStatus.valueOf(resultSet.getString("status")));
                 order.setDishOrderList(findDishOrderByIdOrder(idOrder));
                 return order;
             }
@@ -80,9 +82,16 @@ public class DataRetriever {
             }
 
             String insertOrderSql = """
-                INSERT INTO "order" (id, reference, creation_datetime)
-                VALUES (?, ?, ?)
-                RETURNING id
+                
+                    INSERT INTO "order" (id, reference, creation_datetime, type, status)
+                            VALUES (?, ?, ?, ?::order_type, ?::order_status)
+                            ON CONFLICT (id) DO UPDATE
+                            SET
+                                reference = EXCLUDED.reference,
+                                creation_datetime = EXCLUDED.creation_datetime,
+                                type = EXCLUDED.type,
+                                status = EXCLUDED.status
+                            RETURNING id
                 """;
 
             int orderId;
@@ -95,6 +104,8 @@ public class DataRetriever {
 
                 ps.setString(2, orderToSave.getReference());
                 ps.setTimestamp(3, Timestamp.from(Instant.now()));
+                ps.setString(4, orderToSave.getOrderType().toString());
+                ps.setString(5, orderToSave.getOrderStatut().toString());
 
                 try (ResultSet rs = ps.executeQuery()) {
                     rs.next();
@@ -102,11 +113,16 @@ public class DataRetriever {
                 }
             }
 
-            String insertDishOrderSql = """
-                INSERT INTO dish_order (id_order, id_dish, quantity)
-                VALUES (?, ?, ?)
-                """;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "DELETE FROM dish_order WHERE id_order = ?")) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
 
+            String insertDishOrderSql = """
+            INSERT INTO dish_order (id_order, id_dish, quantity)
+            VALUES (?, ?, ?)
+        """;
             try (PreparedStatement ps = conn.prepareStatement(insertDishOrderSql)) {
                 for (DishOrder dishOrder : orderToSave.getDishOrderList()) {
                     ps.setInt(1, orderId);
@@ -131,7 +147,7 @@ public class DataRetriever {
         Order order = null;
 
 
-        String orderQuery = "SELECT id, reference, creation_datetime FROM \"Order\" WHERE id = ?";
+        String orderQuery = "SELECT id, reference, creation_datetime, type, status FROM \"Order\" WHERE id = ?";
 
 
         String dishOrderQuery = """
@@ -151,6 +167,8 @@ public class DataRetriever {
                         order.setId(rs.getInt("id"));
                         order.setReference(rs.getString("reference"));
                         order.setCreationDatetime(rs.getTimestamp("creation_datetime").toInstant());
+                        order.setOrderType(OrderType.valueOf(rs.getString("type")));
+                        order.setOrderStatut(OrderStatus.valueOf(rs.getString("status")));
                         order.setDishOrderList(new ArrayList<>());
                     } else {
                         return null;

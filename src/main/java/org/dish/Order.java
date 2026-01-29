@@ -9,6 +9,8 @@ public class Order {
     private String reference;
     private Instant creationDatetime;
     private List<DishOrder> dishOrderList;
+    private OrderType orderType;
+    private OrderStatus orderStatut;
 
     public Integer getId() {
         return id;
@@ -42,15 +44,22 @@ public class Order {
         this.dishOrderList = dishOrderList;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", reference='" + reference + '\'' +
-                ", creationDatetime=" + creationDatetime +
-                ", dishOrderList=" + dishOrderList +
-                '}';
+    public OrderType getOrderType() {
+        return orderType;
     }
+
+    public void setOrderType(OrderType orderType) {
+        this.orderType = orderType;
+    }
+
+    public OrderStatus getOrderStatut() {
+        return orderStatut;
+    }
+
+    public void setOrderStatut(OrderStatus orderStatut) {
+        this.orderStatut = orderStatut;
+    }
+
 
     Double getTotalAmountWithoutVat() {
         throw new RuntimeException("Not implemented");
@@ -64,13 +73,23 @@ public class Order {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Order order)) return false;
-        return Objects.equals(id, order.id) && Objects.equals(reference, order.reference) && Objects.equals(creationDatetime, order.creationDatetime) && Objects.equals(dishOrderList, order.dishOrderList);
+        return Objects.equals(id, order.id) && Objects.equals(reference, order.reference) && Objects.equals(creationDatetime, order.creationDatetime) && Objects.equals(dishOrderList, order.dishOrderList) && orderType == order.orderType && orderStatut == order.orderStatut;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reference, creationDatetime, dishOrderList);
+        return Objects.hash(id, reference, creationDatetime, dishOrderList, orderType, orderStatut);
     }
 
-
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", reference='" + reference + '\'' +
+                ", creationDatetime=" + creationDatetime +
+                ", dishOrderList=" + dishOrderList +
+                ", orderType=" + orderType +
+                ", orderStatut=" + orderStatut +
+                '}';
+    }
 }
