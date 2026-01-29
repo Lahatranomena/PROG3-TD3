@@ -16,6 +16,10 @@ public class StockMovement {
         this.creation_datetime = creation_datetime;
     }
 
+    public StockMovement() {
+
+    }
+
     public int getId() {
         return id;
     }
@@ -40,11 +44,11 @@ public class StockMovement {
         this.type = type;
     }
 
-    public Instant getCreation_datetime() {
+    public Instant getCreationDatetime() {
         return creation_datetime;
     }
 
-    public void setCreation_datetime(Instant creation_datetime) {
+    public void setCreationDatetime(Instant creation_datetime) {
         this.creation_datetime = creation_datetime;
     }
 
