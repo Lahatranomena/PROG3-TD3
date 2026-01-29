@@ -17,7 +17,7 @@ public class Main {
 //        System.out.println(dish.getGrossMargin());
 
 
-//        String referenceToSearch = "ORD00001"; // <-- Mets une référence qui existe dans ta table "order"
+//        String referenceToSearch = "ORD00001"; //
 //
 //        try {
 //            Order order = retriever.findOrderByReference(referenceToSearch);
@@ -40,39 +40,39 @@ public class Main {
 //            System.out.println("Erreur : " + e.getMessage());
 //        }
 
-//        try {
-//            Dish dish = retriever.findDishById(1);
-//
-//            DishOrder dishOrder = new DishOrder();
-//            dishOrder.setDish(dish);
-//            dishOrder.setQuantity(1);
-//
-//            Order order = new Order();
-//            order.setId(2);
-//            order.setReference("ORD00001");
-//            order.setCreationDatetime(Instant.now());
-//            order.setOrderType(OrderType.EAT_IN);
-//            order.setOrderStatut(OrderStatus.DELIVERED);
-//            order.setDishOrderList(List.of(dishOrder));
-//
-//            Order savedOrder = retriever.saveOrder(order);
-//
-//            System.out.println("Commande sauvegardée avec succès :");
-//            System.out.println(savedOrder);
-//
-//        } catch (RuntimeException e) {
-//            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
-//        }
-
         try {
-            Order order = retriever.findOrderByReference("ORD00001");
-            order.setOrderStatut(OrderStatus.DELIVERED);
+            Dish dish = retriever.findDishById(3);
 
-            retriever.updateOrder(order);
+            DishOrder dishOrder = new DishOrder();
+            dishOrder.setDish(dish);
+            dishOrder.setQuantity(1);
+
+            Order order = new Order();
+            order.setId(2);
+            order.setReference("ORD00002");
+            order.setCreationDatetime(Instant.now());
+            order.setOrderType(OrderType.TAKE_AWAY);
+            order.setOrderStatut(OrderStatus.DELIVERED);
+            order.setDishOrderList(List.of(dishOrder));
+
+            Order savedOrder = retriever.saveOrder(order);
+
+            System.out.println("Commande sauvegardée avec succès :");
+            System.out.println(savedOrder);
 
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
         }
+
+//        try {
+//            Order order = retriever.findOrderByReference("ORD00001");
+//            order.setOrderStatut(OrderStatus.DELIVERED);
+//
+//            retriever.updateOrder(order);
+//
+//        } catch (RuntimeException e) {
+//            System.out.println(e.getMessage());
+//        }
 
 //        DBConnection dbConnection = new DBConnection();
 //
