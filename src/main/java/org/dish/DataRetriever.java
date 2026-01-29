@@ -79,6 +79,21 @@ public class DataRetriever {
         try (Connection conn = new DBConnection().getConnection()) {
             conn.setAutoCommit(false);
 
+            if (orderToSave.getId() != null) {
+                String checkStatusSql = "SELECT status FROM \"order\" WHERE id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(checkStatusSql)) {
+                    ps.setInt(1, orderToSave.getId());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            String currentStatus = rs.getString("status");
+                            if ("DELIVERED".equals(currentStatus)) {
+                                throw new RuntimeException("Une commande livrée ne peut être modifiée");
+                            }
+                        }
+                    }
+                }
+            }
+
             for (DishOrder dishOrder : orderToSave.getDishOrderList()) {
                 Dish dish = dishOrder.getDish();
                 int quantityOrdered = dishOrder.getQuantity();
@@ -89,25 +104,22 @@ public class DataRetriever {
 
                     StockValue stockValue = ingredient.getStockValueAt(Instant.now());
                     double availableQuantity = (stockValue != null) ? stockValue.getQuantity() : 0;
-
-
                 }
             }
 
             String insertOrderSql = """
-                
-                    INSERT INTO "order" (id, reference, creation_datetime, type, status)
-                            VALUES (?, ?, ?, ?::order_type, ?::order_status)
-                            ON CONFLICT (id) DO UPDATE
-                            SET
-                                reference = EXCLUDED.reference,
-                                creation_datetime = EXCLUDED.creation_datetime,
-                                type = EXCLUDED.type,
-                                status = EXCLUDED.status
-                            RETURNING id
-                """;
-
+            INSERT INTO "order" (id, reference, creation_datetime, type, status)
+            VALUES (?, ?, ?, ?::order_type, ?::order_status)
+            ON CONFLICT (id) DO UPDATE
+            SET
+                reference = EXCLUDED.reference,
+                creation_datetime = EXCLUDED.creation_datetime,
+                type = EXCLUDED.type,
+                status = EXCLUDED.status
+            RETURNING id
+        """;
             int orderId;
+
             try (PreparedStatement ps = conn.prepareStatement(insertOrderSql)) {
                 if (orderToSave.getId() != null) {
                     ps.setInt(1, orderToSave.getId());
@@ -133,8 +145,8 @@ public class DataRetriever {
             }
 
             String insertDishOrderSql = """
-            INSERT INTO dish_order (id_order, id_dish, quantity)
-            VALUES (?, ?, ?)
+        INSERT INTO dish_order (id_order, id_dish, quantity)
+        VALUES (?, ?, ?)
         """;
             try (PreparedStatement ps = conn.prepareStatement(insertDishOrderSql)) {
                 for (DishOrder dishOrder : orderToSave.getDishOrderList()) {
@@ -154,7 +166,6 @@ public class DataRetriever {
             throw new RuntimeException(e);
         }
     }
-
     public Order findOrderById(Integer id) {
         DBConnection dbConnection = new DBConnection();
         Order order = null;

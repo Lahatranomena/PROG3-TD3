@@ -13,6 +13,13 @@ public class Main {
 
         DataRetriever retriever = new DataRetriever();
 
+        Order order = retriever.findOrderByReference("ORD102");
+
+        order.setOrderType(OrderType.TAKE_AWAY);
+        order.setOrderStatut(OrderStatus.DELIVERED);
+
+        System.out.println(retriever.saveOrder(order));;
+
 //        Dish dish = retriever.findDishById(1);
 //        System.out.println(dish.getGrossMargin());
 
@@ -40,29 +47,29 @@ public class Main {
 //            System.out.println("Erreur : " + e.getMessage());
 //        }
 
-        try {
-            Dish dish = retriever.findDishById(3);
-
-            DishOrder dishOrder = new DishOrder();
-            dishOrder.setDish(dish);
-            dishOrder.setQuantity(1);
-
-            Order order = new Order();
-            order.setId(2);
-            order.setReference("ORD00002");
-            order.setCreationDatetime(Instant.now());
-            order.setOrderType(OrderType.TAKE_AWAY);
-            order.setOrderStatut(OrderStatus.DELIVERED);
-            order.setDishOrderList(List.of(dishOrder));
-
-            Order savedOrder = retriever.saveOrder(order);
-
-            System.out.println("Commande sauvegardée avec succès :");
-            System.out.println(savedOrder);
-
-        } catch (RuntimeException e) {
-            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
-        }
+//        try {
+//            Dish dish = retriever.findDishById(3);
+//
+//            DishOrder dishOrder = new DishOrder();
+//            dishOrder.setDish(dish);
+//            dishOrder.setQuantity(1);
+//
+//            Order order = new Order();
+//            order.setId(2);
+//            order.setReference("ORD00002");
+//            order.setCreationDatetime(Instant.now());
+//            order.setOrderType(OrderType.TAKE_AWAY);
+//            order.setOrderStatut(OrderStatus.DELIVERED);
+//            order.setDishOrderList(List.of(dishOrder));
+//
+//            Order savedOrder = retriever.saveOrder(order);
+//
+//            System.out.println("Commande sauvegardée avec succès :");
+//            System.out.println(savedOrder);
+//
+//        } catch (RuntimeException e) {
+//            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
+//        }
 
 //        try {
 //            Order order = retriever.findOrderByReference("ORD00001");

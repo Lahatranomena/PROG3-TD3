@@ -47,7 +47,7 @@ create table if not exists dish_order
     quantity int
     );
 
-UPDATE ingredient SET initial_stock = 5.0 WHERE id = 1;
+UPDATE "order" SET status = 'DELIVERED' WHERE id = 1;
 UPDATE ingredient SET initial_stock = 4.0 WHERE id = 2;
 UPDATE ingredient SET initial_stock = 10.0 WHERE id = 3;
 UPDATE ingredient SET initial_stock = 3.0 WHERE id = 4;
