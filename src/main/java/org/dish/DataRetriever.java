@@ -62,6 +62,19 @@ public class DataRetriever {
         }
     }
 
+    public Order updateOrder(Order orderToUpdate) {
+
+        Order existingOrder = findOrderByReference(orderToUpdate.getReference());
+
+        if (existingOrder.getOrderStatut() == OrderStatus.DELIVERED) {
+            throw new RuntimeException(
+                    "Une commande livrée ne peut pas être modifiée"
+            );
+        }
+
+        return saveOrder(orderToUpdate);
+    }
+
     public Order saveOrder(Order orderToSave) {
         try (Connection conn = new DBConnection().getConnection()) {
             conn.setAutoCommit(false);

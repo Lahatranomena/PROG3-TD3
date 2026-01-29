@@ -40,30 +40,39 @@ public class Main {
 //            System.out.println("Erreur : " + e.getMessage());
 //        }
 
+//        try {
+//            Dish dish = retriever.findDishById(1);
+//
+//            DishOrder dishOrder = new DishOrder();
+//            dishOrder.setDish(dish);
+//            dishOrder.setQuantity(1);
+//
+//            Order order = new Order();
+//            order.setId(2);
+//            order.setReference("ORD00001");
+//            order.setCreationDatetime(Instant.now());
+//            order.setOrderType(OrderType.EAT_IN);
+//            order.setOrderStatut(OrderStatus.DELIVERED);
+//            order.setDishOrderList(List.of(dishOrder));
+//
+//            Order savedOrder = retriever.saveOrder(order);
+//
+//            System.out.println("Commande sauvegardée avec succès :");
+//            System.out.println(savedOrder);
+//
+//        } catch (RuntimeException e) {
+//            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
+//        }
+
         try {
-            Dish dish = retriever.findDishById(1);
-
-            DishOrder dishOrder = new DishOrder();
-            dishOrder.setDish(dish);
-            dishOrder.setQuantity(1);
-
-            Order order = new Order();
-            order.setId(2);
-            order.setReference("ORD00001");
-            order.setCreationDatetime(Instant.now());
-            order.setOrderType(OrderType.EAT_IN);
+            Order order = retriever.findOrderByReference("ORD00001");
             order.setOrderStatut(OrderStatus.DELIVERED);
-            order.setDishOrderList(List.of(dishOrder));
 
-            Order savedOrder = retriever.saveOrder(order);
-
-            System.out.println("Commande sauvegardée avec succès :");
-            System.out.println(savedOrder);
+            retriever.updateOrder(order);
 
         } catch (RuntimeException e) {
-            System.err.println("Erreur lors de la création de la commande : " + e.getMessage());
+            System.out.println(e.getMessage());
         }
-
 
 //        DBConnection dbConnection = new DBConnection();
 //
