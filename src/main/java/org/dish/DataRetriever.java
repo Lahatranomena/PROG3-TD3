@@ -2,6 +2,8 @@ package org.dish;
 
 import java.sql.*;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -708,5 +710,87 @@ public class DataRetriever {
             throw new RuntimeException(e);
         }
     }
+
+    Double getGrossMargin(Integer dishId) {
+        DBConnection dbConnection = new DBConnection();
+
+        try (Connection conn = dbConnection.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("""
+                    SELECT dish.price - SUM(ingredient.price) AS gain
+                    FROM dishingredient
+                             JOIN dish ON dish.id = dishingredient.id_dish
+                             JOIN ingredient ON ingredient.id = dishingredient.id_ingredient
+                    WHERE dish.id = ?
+                    GROUP BY dish.price;
+                """);
+
+            ps.setInt(1, dishId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                Dish dish = new Dish();
+                dish.setPrice(rs.getDouble("gain"));
+                return dish.getPrice();
+            }
+            throw new RuntimeException("ID Dish not found : " + dishId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    Double getActualQuantityByPeriod(
+            Integer ingredientId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Entree period
+    ) {
+        DBConnection dbConnection = new DBConnection();
+
+        String periodSql;
+        switch (period) {
+            case DAY:
+                periodSql = "day";
+                break;
+            case WEEK:
+                periodSql = "week";
+                break;
+            case MONTH:
+                periodSql = "month";
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown period: " + period);
+        }
+
+        String sql = String.format("""
+            SELECT
+                DATE_TRUNC('%s', creation_datetime) AS period_start,
+                SUM(
+                    CASE WHEN type = 'OUT' THEN -quantity ELSE quantity END
+                ) AS actual_quantity
+            FROM stock_movement
+            WHERE id_ingredient = ?
+              AND creation_datetime BETWEEN ? AND ?
+            GROUP BY period_start
+            ORDER BY period_start;
+            """, periodSql);
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, ingredientId);
+            ps.setTimestamp(2, Timestamp.valueOf(startDate));
+            ps.setTimestamp(3, Timestamp.valueOf(endDate));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("actual_quantity");
+                }
+                throw new RuntimeException("No data for ingredient : " + ingredientId);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 

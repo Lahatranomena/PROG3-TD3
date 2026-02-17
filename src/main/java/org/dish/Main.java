@@ -1,10 +1,8 @@
 package org.dish;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +10,18 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         DataRetriever retriever = new DataRetriever();
+
+        System.out.println(retriever.getActualQuantityByPeriod(
+                1,
+                LocalDateTime.of(2024, 1, 5, 8, 0),
+                LocalDateTime.of(2024, 1, 6, 12, 59),
+                Entree.DAY
+        )
+);
+
+//        System.out.println(retriever.getGrossMargin(1));
 //        System.out.println(retriever.getStockValue(Instant.parse("2024-01-06T12:00:00Z"), 1));
-        System.out.println(retriever.getDishCost(2));
+//        System.out.println(retriever.getDishCost(2));
 //        Ingredient ingredient = retriever.findIngredientById(1);
 //        Instant instant = Instant.parse("2024-01-05T08:00:00Z");
 //        StockValue stock = ingredient.getStockValueAt(instant);
