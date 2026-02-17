@@ -63,4 +63,11 @@ ALTER TABLE "order"
 ALTER TABLE "order"
     ADD COLUMN status order_status;
 
+select stock_movement.unit, sum(stock_movement.quantity - dishingredient.quantity_required)
+    as actual_quantity from stock_movement join ingredient
+                                                on stock_movement.id_ingredient = ingredient.id
+                                           join public.dishingredient on ingredient.id = dishingredient.id_ingredient
+where ingredient.id = 1 and stock_movement.creation_datetime <= '2024-01-05 08:00:00.000000'
+group by ingredient.id, stock_movement.unit;
+
 

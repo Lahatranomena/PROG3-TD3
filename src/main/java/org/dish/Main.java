@@ -12,13 +12,21 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         DataRetriever retriever = new DataRetriever();
+        System.out.println(retriever.getStockValue(Instant.parse("2024-01-06T12:00:00Z"), 1));
 
-        Order order = retriever.findOrderByReference("ORD102");
+//        Ingredient ingredient = retriever.findIngredientById(1);
+//        Instant instant = Instant.parse("2024-01-05T08:00:00Z");
+//        StockValue stock = ingredient.getStockValueAt(instant);
+//
+//        System.out.println(stock.getQuantity() + " " + stock.getUnit());
 
-        order.setOrderType(OrderType.TAKE_AWAY);
-        order.setOrderStatut(OrderStatus.DELIVERED);
-
-        System.out.println(retriever.saveOrder(order));;
+//
+//        Order order = retriever.findOrderByReference("ORD102");
+//
+//        order.setOrderType(OrderType.TAKE_AWAY);
+//        order.setOrderStatut(OrderStatus.DELIVERED);
+//
+//        System.out.println(retriever.saveOrder(order));;
 
 //        Dish dish = retriever.findDishById(1);
 //        System.out.println(dish.getGrossMargin());

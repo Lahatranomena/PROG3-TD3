@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-
 public class DataRetriever {
     DBConnection dbConnection = new DBConnection();
 
@@ -651,6 +650,39 @@ public class DataRetriever {
 
         try (PreparedStatement ps = conn.prepareStatement(setValSql)) {
             ps.executeQuery();
+        }
+    }
+
+    StockValue getStockValue(Instant t, Integer ingredientIdentifier) throws SQLException {
+        DBConnection dbConnection = new DBConnection();
+
+        try (Connection conn = dbConnection.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement("""
+                    SELECT
+                        stock_movement.unit as unit,
+                        SUM(
+                                CASE
+                                    WHEN stock_movement.type = 'OUT' THEN -stock_movement.quantity
+                                    ELSE stock_movement.quantity
+                                    END
+                        ) AS actual_quantity
+                    FROM stock_movement
+                    WHERE stock_movement.id_ingredient = ? and stock_movement.creation_datetime <= ?
+                    GROUP BY stock_movement.unit;
+                    """);
+            ps.setInt(1, ingredientIdentifier);
+            ps.setTimestamp(2, new Timestamp(t.getEpochSecond() * 1000));
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()) {
+                StockValue stockValue = new StockValue();
+                stockValue.setUnit(Unit.valueOf(rs.getString("unit")));
+                stockValue.setQuantity(rs.getDouble("actual_quantity"));
+                return stockValue;
+            }
+            throw new RuntimeException("ID Ingredient not found : " + ingredientIdentifier);
+        } catch(SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
