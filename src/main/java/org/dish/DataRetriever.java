@@ -685,5 +685,28 @@ public class DataRetriever {
             throw new RuntimeException(e);
         }
     }
+
+    Double getDishCost(Integer dishId) {
+        DBConnection dbConnection = new DBConnection();
+
+        try (Connection conn = dbConnection.getConnection()){
+            PreparedStatement ps =  conn.prepareStatement("""
+                    SELECT sum(ingredient.price) as ingredient_price FROM ingredient JOIN dishingredient 
+                    ON ingredient.id = dishingredient.id_ingredient
+                    where id_dish = ?;
+            """);
+
+            ps.setInt(1, dishId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                Dish dish = new Dish();
+                dish.setPrice(rs.getDouble("ingredient_price"));
+                return dish.getPrice();
+            }
+            throw new RuntimeException("ID Dish not found : " + dishId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

@@ -12,8 +12,8 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         DataRetriever retriever = new DataRetriever();
-        System.out.println(retriever.getStockValue(Instant.parse("2024-01-06T12:00:00Z"), 1));
-
+//        System.out.println(retriever.getStockValue(Instant.parse("2024-01-06T12:00:00Z"), 1));
+        System.out.println(retriever.getDishCost(2));
 //        Ingredient ingredient = retriever.findIngredientById(1);
 //        Instant instant = Instant.parse("2024-01-05T08:00:00Z");
 //        StockValue stock = ingredient.getStockValueAt(instant);
